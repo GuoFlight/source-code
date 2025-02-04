@@ -103,7 +103,7 @@ static char ngx_http_error_400_page[] =
 "<body>" CRLF
 "<center><h1>400 Bad Request</h1></center>" CRLF
 ;
-fdgdfgdfgdfgd
+
 
 static char ngx_http_error_401_page[] =
 "<html>" CRLF
