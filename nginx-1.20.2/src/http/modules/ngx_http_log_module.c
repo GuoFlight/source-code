@@ -229,7 +229,7 @@ static ngx_str_t  ngx_http_combined_fmt =
                "\"$request\" $status $body_bytes_sent "
                "\"$http_referer\" \"$http_user_agent\"");
 
-
+// 日志字段、字段在内存空间中的长度、处理函数
 static ngx_http_log_var_t  ngx_http_log_vars[] = {
     { ngx_string("pipe"), 1, ngx_http_log_pipe },
     { ngx_string("time_local"), sizeof("28/Sep/1970:12:00:00 +0600") - 1,

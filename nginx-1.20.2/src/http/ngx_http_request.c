@@ -373,7 +373,7 @@ ngx_http_init_connection(ngx_connection_t *c)
     }
 }
 
-
+// 收到连接后，等待并处理请求
 static void
 ngx_http_wait_request_handler(ngx_event_t *rev)
 {
@@ -389,22 +389,27 @@ ngx_http_wait_request_handler(ngx_event_t *rev)
 
     ngx_log_debug0(NGX_LOG_DEBUG_HTTP, c->log, 0, "http wait request handler");
 
+    // 检测连接是否超时
     if (rev->timedout) {
         ngx_log_error(NGX_LOG_INFO, c->log, NGX_ETIMEDOUT, "client timed out");
         ngx_http_close_connection(c);
         return;
     }
 
+    // 检测连接是否关闭
     if (c->close) {
         ngx_http_close_connection(c);
         return;
     }
 
     hc = c->data;
-    cscf = ngx_http_get_module_srv_conf(hc->conf_ctx, ngx_http_core_module);
 
+    // 获取当前nginx配置
+    cscf = ngx_http_get_module_srv_conf(hc->conf_ctx, ngx_http_core_module);
+    // 得到配置项client_header_buffer_size
     size = cscf->client_header_buffer_size;
 
+    // 给buffer分配内存
     b = c->buffer;
 
     if (b == NULL) {
@@ -499,6 +504,7 @@ ngx_http_wait_request_handler(ngx_event_t *rev)
         return;
     }
 
+    // 处理请求行。如"GET / HTTP/1.1"
     rev->handler = ngx_http_process_request_line;
     ngx_http_process_request_line(rev);
 }
@@ -1057,7 +1063,7 @@ failed:
 
 #endif
 
-
+// 处理请求行(循环读取并解析请求行)
 static void
 ngx_http_process_request_line(ngx_event_t *rev)
 {

@@ -177,11 +177,11 @@ typedef struct {
     ngx_uint_t                        offset;
 } ngx_http_header_out_t;
 
-
+// ngx_http_headers_in_t 请求头
 typedef struct {
     ngx_list_t                        headers;
 
-    ngx_table_elt_t                  *host;
+    ngx_table_elt_t                  *host;                 // Host请求头
     ngx_table_elt_t                  *connection;
     ngx_table_elt_t                  *if_modified_since;
     ngx_table_elt_t                  *if_unmodified_since;
