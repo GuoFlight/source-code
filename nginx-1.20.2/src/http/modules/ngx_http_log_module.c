@@ -833,7 +833,7 @@ ngx_http_log_msec(ngx_http_request_t *r, u_char *buf, ngx_http_log_op_t *op)
     return ngx_sprintf(buf, "%T.%03M", tp->sec, tp->msec);
 }
 
-
+// 日志字段request_time的处理函数
 static u_char *
 ngx_http_log_request_time(ngx_http_request_t *r, u_char *buf,
     ngx_http_log_op_t *op)
@@ -841,12 +841,15 @@ ngx_http_log_request_time(ngx_http_request_t *r, u_char *buf,
     ngx_time_t      *tp;
     ngx_msec_int_t   ms;
 
+    // 得到当前时间
     tp = ngx_timeofday();
 
+    // 计算耗时，包括秒和毫秒
     ms = (ngx_msec_int_t)
              ((tp->sec - r->start_sec) * 1000 + (tp->msec - r->start_msec));
     ms = ngx_max(ms, 0);
 
+    // 返回结果
     return ngx_sprintf(buf, "%T.%03M", (time_t) ms / 1000, ms % 1000);
 }
 

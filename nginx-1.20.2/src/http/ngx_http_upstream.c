@@ -1505,7 +1505,7 @@ ngx_http_upstream_check_broken_connection(ngx_http_request_t *r,
     }
 }
 
-
+// 连接到upstream
 static void
 ngx_http_upstream_connect(ngx_http_request_t *r, ngx_http_upstream_t *u)
 {
@@ -1527,8 +1527,8 @@ ngx_http_upstream_connect(ngx_http_request_t *r, ngx_http_upstream_t *u)
 
     ngx_memzero(u->state, sizeof(ngx_http_upstream_state_t));
 
-    u->start_time = ngx_current_msec;
-
+    // 初始化耗时字段，分别是upstream_connect_time、upstream_header_time和upstream_response_time
+    u->start_time = ngx_current_msec;   // 开始时间
     u->state->response_time = (ngx_msec_t) -1;
     u->state->connect_time = (ngx_msec_t) -1;
     u->state->header_time = (ngx_msec_t) -1;
@@ -2292,7 +2292,7 @@ ngx_http_upstream_read_request_handler(ngx_http_request_t *r)
     ngx_http_upstream_send_request(r, u, 0);
 }
 
-
+// 读取并处理upstream的响应头
 static void
 ngx_http_upstream_process_header(ngx_http_request_t *r, ngx_http_upstream_t *u)
 {
@@ -2429,6 +2429,7 @@ ngx_http_upstream_process_header(ngx_http_request_t *r, ngx_http_upstream_t *u)
 
     /* rc == NGX_OK */
 
+    // 计算耗时字段upstream_header_time
     u->state->header_time = ngx_current_msec - u->start_time;
 
     if (u->headers_in.status_n >= NGX_HTTP_SPECIAL_RESPONSE) {
@@ -4348,7 +4349,7 @@ ngx_http_upstream_cleanup(void *data)
     ngx_http_upstream_finalize_request(r, r->upstream, NGX_DONE);
 }
 
-
+// 完成与upstream请求的最后阶段：释放空间，并将响应发送给客户端等
 static void
 ngx_http_upstream_finalize_request(ngx_http_request_t *r,
     ngx_http_upstream_t *u, ngx_int_t rc)
@@ -4372,6 +4373,7 @@ ngx_http_upstream_finalize_request(ngx_http_request_t *r,
         u->resolved->ctx = NULL;
     }
 
+    // 计算耗时、响应体长度等字段
     if (u->state && u->state->response_time == (ngx_msec_t) -1) {
         u->state->response_time = ngx_current_msec - u->start_time;
 
@@ -5454,7 +5456,8 @@ ngx_http_upstream_status_variable(ngx_http_request_t *r,
     return NGX_OK;
 }
 
-
+// 日志字段的处理函数
+// 用来处理这3个变量: upstream_connect_time、upstream_header_time和upstream_response_time
 static ngx_int_t
 ngx_http_upstream_response_time_variable(ngx_http_request_t *r,
     ngx_http_variable_value_t *v, uintptr_t data)

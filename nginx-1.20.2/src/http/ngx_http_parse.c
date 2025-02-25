@@ -854,7 +854,7 @@ done:
     return NGX_OK;
 }
 
-
+// 逐行解析请求行，并保存到ngx_http_request_t *r的header_in中
 ngx_int_t
 ngx_http_parse_header_line(ngx_http_request_t *r, ngx_buf_t *b,
     ngx_uint_t allow_underscores)

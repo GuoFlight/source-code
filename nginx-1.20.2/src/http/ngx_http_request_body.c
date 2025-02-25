@@ -28,6 +28,7 @@ static ngx_int_t ngx_http_request_body_chunked_filter(ngx_http_request_t *r,
     ngx_chain_t *in);
 
 
+// 参数post_handler：此函数完成之后，下一步处理函数。
 ngx_int_t
 ngx_http_read_client_request_body(ngx_http_request_t *r,
     ngx_http_client_body_handler_pt post_handler)
@@ -144,6 +145,7 @@ ngx_http_read_client_request_body(ngx_http_request_t *r,
         }
     }
 
+    // rb->rest == 0 表示请求体已经被读取完成了
     if (rb->rest == 0) {
         /* the whole request body was pre-read */
         r->request_body_no_buffering = 0;
@@ -151,12 +153,15 @@ ngx_http_read_client_request_body(ngx_http_request_t *r,
         return NGX_OK;
     }
 
+    // rb->rest < 0 表示请求体读取错误
     if (rb->rest < 0) {
         ngx_log_error(NGX_LOG_ALERT, r->connection->log, 0,
                       "negative request body rest");
         rc = NGX_HTTP_INTERNAL_SERVER_ERROR;
         goto done;
     }
+
+    // 剩余情况为rb->rest > 0 表示请求体还需要继续读取
 
     clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 

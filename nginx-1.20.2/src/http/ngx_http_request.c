@@ -1431,6 +1431,7 @@ ngx_http_process_request_headers(ngx_event_t *rev)
         /* the host header could change the server configuration context */
         cscf = ngx_http_get_module_srv_conf(r, ngx_http_core_module);
 
+        // 逐行解析请求行，并保存到ngx_http_request_t *r的header_in中
         rc = ngx_http_parse_header_line(r, r->header_in,
                                         cscf->underscores_in_headers);
 
@@ -1535,7 +1536,7 @@ ngx_http_process_request_headers(ngx_event_t *rev)
     ngx_http_run_posted_requests(c);
 }
 
-
+// 读取请求头数据
 static ssize_t
 ngx_http_read_request_header(ngx_http_request_t *r)
 {
