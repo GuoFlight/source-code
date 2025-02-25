@@ -145,7 +145,6 @@ ngx_http_read_client_request_body(ngx_http_request_t *r,
         }
     }
 
-    // rb->rest == 0 表示请求体已经被读取完成了
     if (rb->rest == 0) {
         /* the whole request body was pre-read */
         r->request_body_no_buffering = 0;
@@ -153,15 +152,12 @@ ngx_http_read_client_request_body(ngx_http_request_t *r,
         return NGX_OK;
     }
 
-    // rb->rest < 0 表示请求体读取错误
     if (rb->rest < 0) {
         ngx_log_error(NGX_LOG_ALERT, r->connection->log, 0,
                       "negative request body rest");
         rc = NGX_HTTP_INTERNAL_SERVER_ERROR;
         goto done;
     }
-
-    // 剩余情况为rb->rest > 0 表示请求体还需要继续读取
 
     clcf = ngx_http_get_module_loc_conf(r, ngx_http_core_module);
 
@@ -402,6 +398,12 @@ ngx_http_do_read_client_request_body(ngx_http_request_t *r)
         r->read_event_handler = ngx_http_block_reading;
         rb->post_handler(r);
     }
+
+    // 记录接收完请求体的时刻
+    ngx_time_t      *tp;
+    tp = ngx_timeofday();
+    r->request_body_received_time_sec = tp->sec;
+    r->request_body_received_time_msec = tp->msec;
 
     return NGX_OK;
 }
