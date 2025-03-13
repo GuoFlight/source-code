@@ -74,8 +74,7 @@ systemctl disable firewalld
 # 同步代码
 rsync -avz --delete ./* root@172.16.1.128:/root/nginx/
 编译、安装
-./configure xxx
-make && make install
+./configure xxx && make && make install && systemctl restart nginx
 # 重启
 systemctl restart nginx
 测试：curl http://127.0.0.1

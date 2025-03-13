@@ -405,6 +405,13 @@ struct ngx_http_request_s {
     time_t                            request_body_received_time_sec;
     ngx_msec_t                        request_body_received_time_msec;
 
+    // 新增耗时字段(记录开始给发送客户端请求头的时刻)
+    time_t                            client_response_start_time_sec;
+    ngx_msec_t                        client_response_start_time_msec;
+    // 新增耗时字段(记录给客户端发送完请求体的时刻)
+    time_t                            client_response_end_time_sec;
+    ngx_msec_t                        client_response_end_time_msec;
+
     ngx_uint_t                        method;
     ngx_uint_t                        http_version;
 

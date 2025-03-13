@@ -290,7 +290,16 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
 
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0,
                    "http write filter limit %O", limit);
+    
+    // 记录开始给发送客户端请求头的时刻
+    if (r->client_response_start_time_sec == (time_t) -1 ){
+        ngx_time_t      *tp;
+        tp = ngx_timeofday();
+        r->client_response_start_time_sec = tp->sec;
+        r->client_response_start_time_msec = tp->msec;
+    }
 
+    // 即将给客户端发送响应头和响应体（注意：这里可能会被多次执行，如返回大文件）
     chain = c->send_chain(c, r->out, limit);
 
     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0,
@@ -353,6 +362,12 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
     if ((c->buffered & NGX_LOWLEVEL_BUFFERED) && r->postponed == NULL) {
         return NGX_AGAIN;
     }
+
+    // 记录给客户端发送完请求体的时刻
+    ngx_time_t      *tp;
+    tp = ngx_timeofday();
+    r->client_response_end_time_sec = tp->sec;
+    r->client_response_end_time_msec = tp->msec;
 
     return NGX_OK;
 }

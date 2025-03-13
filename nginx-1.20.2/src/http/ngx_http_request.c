@@ -626,6 +626,10 @@ ngx_http_alloc_request(ngx_connection_t *c)
     r->start_msec = tp->msec;
     r->request_body_received_time_sec = (ngx_msec_t) -1;
     r->request_body_received_time_msec = (ngx_msec_t) -1;
+    r->client_response_start_time_sec = (ngx_msec_t) -1;
+    r->client_response_start_time_msec = (ngx_msec_t) -1;
+    r->client_response_end_time_sec = (ngx_msec_t) -1;
+    r->client_response_end_time_msec = (ngx_msec_t) -1;
 
     r->method = NGX_HTTP_UNKNOWN;
     r->http_version = NGX_HTTP_VERSION_10;

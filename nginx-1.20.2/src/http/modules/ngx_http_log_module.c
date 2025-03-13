@@ -130,6 +130,7 @@ static u_char *ngx_http_log_body_bytes_sent(ngx_http_request_t *r,
 static u_char *ngx_http_log_request_length(ngx_http_request_t *r, u_char *buf,
     ngx_http_log_op_t *op);
 static u_char *ngx_http_log_client_request_time(ngx_http_request_t *r, u_char *buf, ngx_http_log_op_t *op);
+static u_char *ngx_http_log_client_response_time(ngx_http_request_t *r, u_char *buf, ngx_http_log_op_t *op);
 
 static ngx_int_t ngx_http_log_variable_compile(ngx_conf_t *cf,
     ngx_http_log_op_t *op, ngx_str_t *value, ngx_uint_t escape);
@@ -247,6 +248,7 @@ static ngx_http_log_var_t  ngx_http_log_vars[] = {
     { ngx_string("request_length"), NGX_SIZE_T_LEN,
                           ngx_http_log_request_length },
     { ngx_string("client_request_time"), NGX_TIME_T_LEN + 4, ngx_http_log_client_request_time },
+    { ngx_string("client_response_time"), NGX_TIME_T_LEN + 4, ngx_http_log_client_response_time },
 
     { ngx_null_string, 0, NULL }
 };
@@ -257,6 +259,16 @@ ngx_http_log_client_request_time(ngx_http_request_t *r, u_char *buf, ngx_http_lo
 {
     ngx_msec_int_t   ms;
     ms = (ngx_msec_int_t)((r->request_body_received_time_sec - r->start_sec) * 1000 + (r->request_body_received_time_msec - r->start_msec));
+    ms = ngx_max(ms, 0);
+    return ngx_sprintf(buf, "%T.%03M", (time_t) ms / 1000, ms % 1000);
+}
+
+// 处理函数：计算耗时client_response_time
+static u_char *
+ngx_http_log_client_response_time(ngx_http_request_t *r, u_char *buf, ngx_http_log_op_t *op)
+{
+    ngx_msec_int_t   ms;
+    ms = (ngx_msec_int_t)((r->client_response_end_time_sec - r->client_response_start_time_sec) * 1000 + (r->client_response_end_time_msec - r->client_response_start_time_msec));
     ms = ngx_max(ms, 0);
     return ngx_sprintf(buf, "%T.%03M", (time_t) ms / 1000, ms % 1000);
 }
